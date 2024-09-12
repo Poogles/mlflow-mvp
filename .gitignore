@@ -163,3 +163,5 @@ cython_debug/
 
 # MLflow specific.
 mlruns
+
+*.DS_Store

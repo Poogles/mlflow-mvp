@@ -4,7 +4,7 @@ This is intended to be viewed alongside the [MLflow docs](https://mlflow.org/doc
 
 ### Installation
 
-This demo is packaged using poetry.
+This demo is packaged using poetry, both 'parts' are packaged seperately.
 
 ```python
 poetry install
@@ -12,32 +12,49 @@ poetry install
 
 ### Exporting and running the model
 
-To export our 'model' from the `build.py` file run...
+To export our 'models' from the `model` directory run...
 
 ```bash
-# Export the model
-% poetry run python export.py
+# Export the models
+% cd model && poetry run python export.py
 ```
 
-You should now see a stored model on disk.
+You should now see a pair of stored models on disk.
 
 ```bash
-% ls -la /tmp/test_model/pyfunc_model
-total 40
-drwxr-xr-x  7 spegler  wheel  224  3 Sep 11:43 .
-drwxr-xr-x  3 spegler  wheel   96  3 Sep 11:43 ..
--rw-r--r--  1 spegler  wheel  400  3 Sep 11:43 MLmodel
--rw-r--r--  1 spegler  wheel  149  3 Sep 11:43 conda.yaml
--rw-r--r--  1 spegler  wheel  112  3 Sep 11:43 python_env.yaml
--rw-r--r--  1 spegler  wheel   38  3 Sep 11:43 python_model.pkl
--rw-r--r--  1 spegler  wheel   46  3 Sep 11:43 requirements.txt
+% ls -la /tmp/test_model/
+total 0
+drwxr-xr-x    4 spegler  wheel   128 11 Sep 17:57 .
+drwxrwxrwt  117 root     wheel  3744 12 Sep 07:46 ..
+drwxr-xr-x    9 spegler  wheel   288 11 Sep 17:57 pyfunc_model.v1
+drwxr-xr-x    9 spegler  wheel   288 11 Sep 17:57 pyfunc_model.v2
 ```
 
-This can then be used 'downstream' by the `run.py`.
+You can now run the API to serve the models.
 
 ```bash
-% poetry run python run.py test
-3
-% poetry run python run.py test
-2
+% cd ../api && poetry run fastapi dev
+...
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
+
+The above message shows when the API is running and ready to serve traffic.
+
+To test the models, run the following in another terminal window.
+
+```bash
+# Try v1 of the model.
+% curl -H "Content-type: application/json" -d'{"version":"v1","input":"potato"}' http://127.0.0.1:8000/model
+["P","O","T","A","T","O"]
+# Try v2 of the model.
+% curl -H "Content-type: application/json" -d'{"version":"v2","input":"potato"}' http://127.0.0.1:8000/model
+["P","o","T","a","T","o"]
+```
+
+### Thoughts
+
+1. Initial loading of the MLflow libraries takes some time, but once they're
+	in the python VM it's relatively quick to load a model (proportional to
+	the size of the model).
+2. Currently this doesn't manage dependencies independely between the `api` and
+	`model` modules.
