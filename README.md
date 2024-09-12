@@ -54,7 +54,11 @@ To test the models, run the following in another terminal window.
 ### Thoughts
 
 1. Initial loading of the MLflow libraries takes some time, but once they're
-	in the python VM it's relatively quick to load a model (proportional to
-	the size of the model).
+    in the python VM it's relatively quick to load a model (proportional to
+    the size of the model).
 2. Currently this doesn't manage dependencies independely between the `api` and
-	`model` modules.
+    `model` modules.
+3. Names for the models have to be different due to internal caches in MLflow.
+    [Here](https://mlflow.org/docs/latest/model/dependencies.html#limitation-of-code-paths-in-loading-multiple-models-with-the-same-module-name-but-different-implementations)
+    expands upon possible workarounds if we want models to have the same name.
+    I'm not sure we do, do we want to add a version in the name like the above?
