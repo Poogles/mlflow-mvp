@@ -11,11 +11,13 @@ MODEL_STORAGE_PATH = "/tmp/test_model"
 
 def predict_v1(model_input: list[str]) -> list[str]:
     """This uppercases every input char and outputs a new list."""
+    import numpy as np
     return [i.upper() for i in model_input]
 
 
 def predict_v2(model_input: list[str]) -> list[str]:
     """This spongebobCases every input char and outputs a new list."""
+    import numpy as np
     return [t.upper() if (i % 2 == 0) else t.lower() for i, t in enumerate(model_input)]
 
 
@@ -25,7 +27,7 @@ if __name__ == "__main__":
         path=pyfunc_model_path_v1,
         python_model=predict_v1,
         input_example=["a"],
-        pip_requirements=["requirements-v1.txt"],
+        pip_requirements=["numpy==2.1.0"],
     )
 
     pyfunc_model_path_v2 = os.path.join(MODEL_STORAGE_PATH, "pyfunc_model.v2")
@@ -33,5 +35,5 @@ if __name__ == "__main__":
         path=pyfunc_model_path_v2,
         python_model=predict_v2,
         input_example=["a"],
-        pip_requirements=["requirements-v2.txt"],
+        pip_requirements=["numpy==2.1.1"],
     )
